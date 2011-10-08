@@ -5,14 +5,18 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
 import java.net.URI;
 import java.util.LinkedList;
 
+import javax.imageio.ImageIO;
 import javax.swing.Box;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JEditorPane;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -22,9 +26,16 @@ import javax.swing.event.HyperlinkListener;
 
 import fiatlux.backend.Backend;
 
-public class SettingsDialogue implements ActionListener, HyperlinkListener {
+public class SettingsDialogue extends JFrame implements ActionListener,
+		HyperlinkListener {
+
+	private static final long serialVersionUID = 1L;
+
 	public SettingsDialogue(int floor, int zone, Backend back,
 			boolean extendNotifications) {
+		super();
+
+		// set up options
 		Integer[] op0 = { 4, 6, 7 };
 		selectFloor = new JComboBox<Integer>(op0);
 		selectFloor.setName("Floor");
@@ -43,9 +54,22 @@ public class SettingsDialogue implements ActionListener, HyperlinkListener {
 		this.zone = zone;
 		this.back = back;
 		this.extendNotifications = extendNotifications;
+
+		// set JFrame variables
+		try {
+			this.setIconImage(ImageIO.read(new File("images/taskbaricon.png")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		this.setUndecorated(true);
+		this.setVisible(true);
+		this.setLocationRelativeTo(null);
+		this.settingsInfo = new LinkedList<String>();
+		this.settingsDialogue();
+		this.dispose();
 	}
 
-	public LinkedList<String> settingsDialogue() {
+	public void settingsDialogue() {
 		this.brightnessLevels = back.getBrightness(true);
 		myPanel = new JPanel(new GridBagLayout());
 		c = new GridBagConstraints();
@@ -136,13 +160,11 @@ public class SettingsDialogue implements ActionListener, HyperlinkListener {
 		int exitType = JOptionPane.showOptionDialog(null, myPanel, "Settings",
 				JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null,
 				buttons, buttons[0]);
-		LinkedList<String> info = new LinkedList<String>();
-		info.add(exitType + "");
-		info.add(selectFloor.getSelectedItem() + "");
-		info.add(selectZone.getSelectedItem() + "");
-		info.add(selectBrightness.getSelectedIndex() + "");
-		info.add(selectExtendNotifications.isSelected() + "");
-		return info;
+		settingsInfo.add(exitType + "");
+		settingsInfo.add(selectFloor.getSelectedItem() + "");
+		settingsInfo.add(selectZone.getSelectedItem() + "");
+		settingsInfo.add(selectBrightness.getSelectedIndex() + "");
+		settingsInfo.add(selectExtendNotifications.isSelected() + "");
 	}
 
 	// update options on start
@@ -205,6 +227,11 @@ public class SettingsDialogue implements ActionListener, HyperlinkListener {
 		}
 	}
 
+	// return settings info
+	public LinkedList<String> getSettingsInfo() {
+		return settingsInfo;
+	}
+
 	// models for switching
 	private DefaultComboBoxModel<Integer> zones4;
 	private DefaultComboBoxModel<Integer> zones6;
@@ -226,6 +253,9 @@ public class SettingsDialogue implements ActionListener, HyperlinkListener {
 	private int floor;
 	private int zone;
 	private boolean extendNotifications;
+
+	// selection data
+	private LinkedList<String> settingsInfo;
 
 	private Backend back;
 }

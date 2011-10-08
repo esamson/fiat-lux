@@ -34,6 +34,7 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
 import fiatlux.frontend.Frontend;
+import fiatlux.frontend.LoginDialogue;
 
 public class Backend {
 
@@ -74,23 +75,23 @@ public class Backend {
 		String bright = "";
 		switch (this.brightness) {
 		case 0:
-			bright = "Off.";
+			bright = "Off";
 			break;
 		case 1:
-			bright = "Low.";
+			bright = "Low";
 			break;
 		case 2:
-			bright = "Medium.";
+			bright = "Medium";
 			break;
 		case 3:
-			bright = "High.";
+			bright = "High";
 			break;
 		}
 		if (extendNotifications) {
 			front.balloon("Extending...",
 					"Currently extending the lights for Floor " + this.floor
 							+ ", Zone " + this.zone
-							+ ".  Current brightness level is " + bright);
+							+ ".  Current brightness level is " + bright + ".");
 		}
 		front.setStatus(Frontend.ACTIVE);
 		try {
@@ -250,7 +251,8 @@ public class Backend {
 		LinkedList<String> info;
 		if (!dialogueOn) {
 			this.dialogueOn = true;
-			info = front.loginDialogue();
+			LoginDialogue dialogue = new LoginDialogue();
+			info = dialogue.getLoginInfo();
 			this.dialogueOn = false;
 		} else {
 			return;
@@ -274,7 +276,8 @@ public class Backend {
 		LinkedList<String> info;
 		if (!dialogueOn) {
 			this.dialogueOn = true;
-			info = front.loginDialogue();
+			LoginDialogue dialogue = new LoginDialogue();
+			info = dialogue.getLoginInfo();
 			this.dialogueOn = false;
 		} else {
 			return;
