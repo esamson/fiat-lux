@@ -17,7 +17,8 @@ import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 
-import fiatlux.backend.Backend;
+import fiatlux.backend.*;
+import fiatlux.os.*;
 
 public class Frontend implements ActionListener, ItemListener {
 
@@ -37,7 +38,8 @@ public class Frontend implements ActionListener, ItemListener {
 		// create tray icon
 		PopupMenu popup = new PopupMenu();
 		try {
-			trayIcon = new TrayIcon(ImageIO.read(new File("images/trayicon.gif")));
+			trayIcon = new TrayIcon(
+					ImageIO.read(new File("images/trayicon.gif")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -61,6 +63,15 @@ public class Frontend implements ActionListener, ItemListener {
 		popup.add(standbyItem);
 		popup.addSeparator();
 		popup.add(exit);
+
+		SystemCallHandler sys = null;
+
+		// create object to handle system calls
+		if (System.getProperty("os.name").toLowerCase().contains("win")) {
+			sys = new WindowsCallHandler();
+		} else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			sys = new OSXCallHandler();
+		}
 
 		tray = SystemTray.getSystemTray();
 		trayIcon.setPopupMenu(popup);
@@ -89,7 +100,9 @@ public class Frontend implements ActionListener, ItemListener {
 				int toMinute = 60000;
 				Thread.sleep(10 * toMinute);
 
-				long currTime = System.currentTimeMillis() / 1000;
+				long idleTime = sys.getSystemIdleTime();
+
+				long currTime = System.currentTimeMillis();
 				long interval = currTime - timestamp;
 				if (interval > 11 * toMinute) {
 					this.setStatus(Frontend.STANDBY_MANUAL);
@@ -97,6 +110,14 @@ public class Frontend implements ActionListener, ItemListener {
 					this.balloon("Where are you?",
 							"If you're still in Sutardja Dai, please select the standby option "
 									+ "to continue using Fiat Lux.");
+				}
+
+				if (idleTime > 9 * toMinute) {
+					this.setStatus(Frontend.STANDBY_MANUAL);
+					this.forceStandby();
+					this.balloon("Idle",
+							"You've gone idle.  Please select the standby option to continue "
+									+ "using Fiat Lux.");
 				}
 				this.timestamp = currTime;
 			} catch (InterruptedException e) {
