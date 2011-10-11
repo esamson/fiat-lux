@@ -2,6 +2,6 @@ package fiatlux.os;
 
 public interface SystemCallHandler {
 
-	// return System Idle Time in seconds
+	// return System Idle Time in milliseconds
 	public long getSystemIdleTime();
 }

@@ -29,6 +29,9 @@ public class Frontend implements ActionListener, ItemListener {
 
 	// initialize stuff and start extend loop
 	public void init() {
+		// get OS
+		this.setOS();
+
 		// check to see if the tray is supported
 		if (!SystemTray.isSupported()) {
 			System.out.println("SystemTray is not supported.");
@@ -66,11 +69,17 @@ public class Frontend implements ActionListener, ItemListener {
 
 		SystemCallHandler sys = null;
 
-		// create object to handle system calls
-		if (System.getProperty("os.name").toLowerCase().contains("win")) {
+		// create call handler
+		switch (this.os) {
+		case (Frontend.WINDOWS):
 			sys = new WindowsCallHandler();
-		} else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			break;
+		case (Frontend.MAC):
 			sys = new OSXCallHandler();
+			break;
+		case (Frontend.OTHER_OS):
+			sys = new GenericCallHandler();
+			break;
 		}
 
 		tray = SystemTray.getSystemTray();
@@ -136,7 +145,10 @@ public class Frontend implements ActionListener, ItemListener {
 
 	// display a balloon notification
 	public void balloon(String title, String message) {
-		trayIcon.displayMessage(title, message, MessageType.NONE);
+		if (this.os != Frontend.MAC) {
+			trayIcon.displayMessage(title, message, MessageType.NONE);
+		} else {
+		}
 	}
 
 	// set the tooltip for the tray icon
@@ -205,11 +217,24 @@ public class Frontend implements ActionListener, ItemListener {
 		}
 	}
 
+	// utility method to set OS flag
+	public void setOS() {
+		if (System.getProperty("os.name").toLowerCase().contains("win")) {
+			this.os = Frontend.WINDOWS;
+		} else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
+			this.os = Frontend.MAC;
+		} else {
+			this.os = Frontend.OTHER_OS;
+		}
+	}
+
 	private Backend back;
 	private TrayIcon trayIcon;
 	private SystemTray tray;
 	private boolean standby;
 	private long timestamp;
+
+	private int os;
 
 	// possible status messages
 	public static final String ACTIVE = "Active - Keeping the lights on!";
@@ -221,4 +246,9 @@ public class Frontend implements ActionListener, ItemListener {
 			+ "connection.";
 	public static final String STANDBY_MANUAL = "Standby - Select menu option to activate Fiat "
 			+ "Lux.";
+
+	// OS flags
+	public static final int WINDOWS = 0;
+	public static final int MAC = 1;
+	public static final int OTHER_OS = 2;
 }
