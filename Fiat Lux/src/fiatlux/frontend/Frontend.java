@@ -17,6 +17,8 @@ import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
 
+import com.growl.GrowlWrapper;
+
 import fiatlux.backend.*;
 import fiatlux.os.*;
 
@@ -148,6 +150,14 @@ public class Frontend implements ActionListener, ItemListener {
 		if (this.os != Frontend.MAC) {
 			trayIcon.displayMessage(title, message, MessageType.NONE);
 		} else {
+			String[] notifications = { "Info" };
+			GrowlWrapper growl = new GrowlWrapper("Fiat Lux", "Finder",
+					notifications, notifications);
+			if (growl.getState() == GrowlWrapper.GROWL_OK) {
+				growl.notify("Info", title, message);
+			} else {
+				trayIcon.displayMessage(title, message, MessageType.NONE);
+			}
 		}
 	}
 

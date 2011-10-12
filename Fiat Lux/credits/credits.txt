@@ -6,3 +6,6 @@ http://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Light_bulb_icon.svg/84p
 
 System idle time code (both Windows and Mac OS X):
 http://ochafik.com/blog/?p=98
+
+Growl notifications:
+http://groups.google.com/group/growldiscuss/browse_thread/thread/28ee0e1be2ed825b/b1eb01effb3af9eb?pli=1
