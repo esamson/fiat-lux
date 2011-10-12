@@ -2,7 +2,6 @@ package fiatlux.frontend;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -22,7 +21,8 @@ public class LoginDialogue extends JFrame {
 	public LoginDialogue() {
 		super();
 		try {
-			this.setIconImage(ImageIO.read(new File("images/taskbaricon.png")));
+			this.setIconImage(ImageIO.read(this.getClass().getResource(
+					"/resources/images/taskbaricon.png")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

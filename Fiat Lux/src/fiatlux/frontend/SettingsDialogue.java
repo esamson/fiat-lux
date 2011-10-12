@@ -5,7 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.util.LinkedList;
@@ -57,7 +56,8 @@ public class SettingsDialogue extends JFrame implements ActionListener,
 
 		// set JFrame variables
 		try {
-			this.setIconImage(ImageIO.read(new File("images/taskbaricon.png")));
+			this.setIconImage(ImageIO.read(this.getClass().getResource(
+					"/resources/images/taskbaricon.png")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

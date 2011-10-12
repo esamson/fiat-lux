@@ -11,7 +11,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.io.File;
 import java.io.IOException;
 import java.util.LinkedList;
 
@@ -43,8 +42,8 @@ public class Frontend implements ActionListener, ItemListener {
 		// create tray icon
 		PopupMenu popup = new PopupMenu();
 		try {
-			trayIcon = new TrayIcon(
-					ImageIO.read(new File("images/trayicon.gif")));
+			trayIcon = new TrayIcon(ImageIO.read(this.getClass().getResource(
+					"/resources/images/trayicon.gif")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
