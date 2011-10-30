@@ -1,0 +1,25 @@
+package fiatlux.launcher;
+
+import java.io.File;
+import java.io.IOException;
+
+public class Launcher {
+	public static void main(String[] args) {
+		try {
+			int version = System.getProperty("java.version").charAt(2);
+
+			// if java is version 5 or higher, run standard version
+			if (version > 5) {
+				Runtime.getRuntime().exec(
+						"java -jar Standard" + File.separator + "fiatlux.jar");
+			}
+
+			// run legacy mode
+			else {
+
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+}
