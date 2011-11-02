@@ -17,7 +17,8 @@ public class Launcher {
 			// run legacy mode
 			else {
 				Runtime.getRuntime().exec(
-						"java -jar Legacy" + File.separator + "fiatlux.jar");
+						"java -jar Legacy" + File.separator
+								+ "fiatluxlegacy.jar");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
