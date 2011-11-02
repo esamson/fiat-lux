@@ -18,11 +18,27 @@ public class LoginDialogue extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	public LoginDialogue() {
+	public LoginDialogue(int status) {
 		super();
 		try {
-			this.setIconImage(ImageIO.read(this.getClass().getResource(
-					"/resources/images/taskbaricon.png")));
+			switch (status) {
+			case Frontend.STATUS_OK:
+				this.setIconImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconok.png")));
+				break;
+			case Frontend.STATUS_STANDBY:
+				this.setIconImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconstandby.png")));
+				break;
+			case Frontend.STATUS_ERROR:
+				this.setIconImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconerror.png")));
+				break;
+			default:
+				this.setIconImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbaricon.png")));
+				break;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -43,7 +43,7 @@ public class Frontend implements ActionListener, ItemListener {
 		PopupMenu popup = new PopupMenu();
 		try {
 			trayIcon = new TrayIcon(ImageIO.read(this.getClass().getResource(
-					"/resources/images/trayicon.gif")));
+					"/resources/images/trayicon.png")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -72,13 +72,13 @@ public class Frontend implements ActionListener, ItemListener {
 
 		// create call handler
 		switch (this.os) {
-		case (Frontend.WINDOWS):
+		case (Frontend.OS_WINDOWS):
 			sys = new WindowsCallHandler();
 			break;
-		case (Frontend.MAC):
+		case (Frontend.OS_MAC):
 			sys = new OSXCallHandler();
 			break;
-		case (Frontend.OTHER_OS):
+		case (Frontend.OS_OTHER):
 			sys = new GenericCallHandler();
 			break;
 		}
@@ -137,16 +137,22 @@ public class Frontend implements ActionListener, ItemListener {
 	}
 
 	// let the user set up their login info
+	public LinkedList<String> loginDialogue() {
+		LoginDialogue login = new LoginDialogue(this.status);
+		return login.getLoginInfo();
+	}
+
+	// let the user set up settings
 	public LinkedList<String> settingsDialogue(int floor, int zone,
 			boolean extendNotifications) {
 		SettingsDialogue settings = new SettingsDialogue(floor, zone,
-				this.back, extendNotifications);
+				this.back, extendNotifications, this.status);
 		return settings.getSettingsInfo();
 	}
 
 	// display a balloon notification
 	public void balloon(String title, String message) {
-		if (this.os != Frontend.MAC) {
+		if (this.os != Frontend.OS_MAC) {
 			trayIcon.displayMessage(title, message, MessageType.NONE);
 		} else {
 			String[] notifications = { "Info" };
@@ -163,11 +169,36 @@ public class Frontend implements ActionListener, ItemListener {
 	// set the tooltip for the tray icon
 	public void setStatus(String status) {
 		trayIcon.setToolTip(status);
-		if (status.equals(ACTIVE)) {
+		if (status.equals(STANDBY_MANUAL) || status.equals(STANDBY_NOINFO)) {
+			this.standby = true;
+			this.forceStandby();
+			this.status = Frontend.STATUS_STANDBY;
+			try {
+				trayIcon.setImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/trayiconstandby.png")));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else if (status.equals(ERROR_CONNECTION) || status.equals(ERROR_INFO)) {
+			this.standby = true;
+			this.forceStandby();
+			this.status = Frontend.STATUS_ERROR;
+			try {
+				trayIcon.setImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/trayiconerror.png")));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
 			this.standby = false;
 			this.clearStandby();
-		} else {
-			this.standby = true;
+			this.status = Frontend.STATUS_OK;
+			try {
+				trayIcon.setImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/trayiconok.png")));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -229,11 +260,11 @@ public class Frontend implements ActionListener, ItemListener {
 	// utility method to set OS flag
 	public void setOS() {
 		if (System.getProperty("os.name").toLowerCase().contains("win")) {
-			this.os = Frontend.WINDOWS;
+			this.os = Frontend.OS_WINDOWS;
 		} else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-			this.os = Frontend.MAC;
+			this.os = Frontend.OS_MAC;
 		} else {
-			this.os = Frontend.OTHER_OS;
+			this.os = Frontend.OS_OTHER;
 		}
 	}
 
@@ -243,21 +274,28 @@ public class Frontend implements ActionListener, ItemListener {
 	private boolean standby;
 	private long timestamp;
 
+	private int status;
+
 	private int os;
 
 	// possible status messages
 	public static final String ACTIVE = "Active - Keeping the lights on!";
-	public static final String STANDBY_NOINFO = "Standby - Please enter Calnet Authentication "
-			+ "information.";
-	public static final String STANDBY_INFO = "Standby - Calnet Authentication information "
-			+ "incorrect.";
-	public static final String STANDBY_CONNECTION = "Standby - Please check internet "
-			+ "connection.";
 	public static final String STANDBY_MANUAL = "Standby - Select menu option to activate Fiat "
 			+ "Lux.";
+	public static final String STANDBY_NOINFO = "Standby - Please enter Calnet Authentication "
+			+ "information.";
+	public static final String ERROR_INFO = "Error - Calnet Authentication information "
+			+ "incorrect.";
+	public static final String ERROR_CONNECTION = "Error - Please check internet "
+			+ "connection.";
 
 	// OS flags
-	public static final int WINDOWS = 0;
-	public static final int MAC = 1;
-	public static final int OTHER_OS = 2;
+	public static final int OS_WINDOWS = 0;
+	public static final int OS_MAC = 1;
+	public static final int OS_OTHER = 2;
+
+	// status flags
+	public static final int STATUS_OK = 0;
+	public static final int STATUS_STANDBY = 1;
+	public static final int STATUS_ERROR = 2;
 }

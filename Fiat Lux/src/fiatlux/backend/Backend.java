@@ -34,7 +34,6 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.protocol.HTTP;
 
 import fiatlux.frontend.Frontend;
-import fiatlux.frontend.LoginDialogue;
 
 public class Backend {
 
@@ -146,11 +145,11 @@ public class Backend {
 			} else {
 				front.balloon("Authentication Failure",
 						"Please re-enter your CalNet Authentication information.");
-				front.setStatus(Frontend.STANDBY_INFO);
+				front.setStatus(Frontend.ERROR_INFO);
 			}
 		} catch (Exception e) {
 			front.balloon("Connection Error", e.toString());
-			front.setStatus(Frontend.STANDBY_CONNECTION);
+			front.setStatus(Frontend.ERROR_CONNECTION);
 		}
 	}
 
@@ -187,7 +186,7 @@ public class Backend {
 						front.balloon("Authentication Failure",
 								"Unable to retrieve current lighting level.  Please re-enter "
 										+ "login information.");
-						front.setStatus(Frontend.STANDBY_INFO);
+						front.setStatus(Frontend.ERROR_INFO);
 						return new int[8][6];
 					}
 
@@ -209,7 +208,7 @@ public class Backend {
 			return levels;
 		} catch (Exception e) {
 			front.balloon("Connection Error", e.toString());
-			front.setStatus(Frontend.STANDBY_CONNECTION);
+			front.setStatus(Frontend.ERROR_CONNECTION);
 		}
 		return new int[8][6];
 	}
@@ -241,7 +240,7 @@ public class Backend {
 			return (responseToGet.getStatusLine().getStatusCode() == 200);
 		} catch (Exception e) {
 			front.balloon("Connection Error", e.toString());
-			front.setStatus(Frontend.STANDBY_CONNECTION);
+			front.setStatus(Frontend.ERROR_CONNECTION);
 		}
 		return false;
 	}
@@ -251,8 +250,7 @@ public class Backend {
 		LinkedList<String> info;
 		if (!dialogueOn) {
 			this.dialogueOn = true;
-			LoginDialogue dialogue = new LoginDialogue();
-			info = dialogue.getLoginInfo();
+			info = front.loginDialogue();
 			this.dialogueOn = false;
 		} else {
 			return;
@@ -265,7 +263,7 @@ public class Backend {
 			} else {
 				front.balloon("Authentication Failure", "Please re-enter "
 						+ "login information.");
-				front.setStatus(Frontend.STANDBY_INFO);
+				front.setStatus(Frontend.ERROR_INFO);
 				this.calnetLogin();
 			}
 		}
@@ -276,8 +274,7 @@ public class Backend {
 		LinkedList<String> info;
 		if (!dialogueOn) {
 			this.dialogueOn = true;
-			LoginDialogue dialogue = new LoginDialogue();
-			info = dialogue.getLoginInfo();
+			info = front.loginDialogue();
 			this.dialogueOn = false;
 		} else {
 			return;
@@ -289,7 +286,7 @@ public class Backend {
 			} else {
 				front.balloon("Authentication Failure", "Please re-enter "
 						+ "login information.");
-				front.setStatus(Frontend.STANDBY_INFO);
+				front.setStatus(Frontend.ERROR_INFO);
 				this.startLogin();
 			}
 		}
