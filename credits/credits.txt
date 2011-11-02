@@ -1,8 +1,20 @@
 System tray icon:
-http://images.newcars.com/images/howto/icon_lightbulb16.gif
+http://www.iconarchive.com/show/fugue-icons-by-yusuke-kamiyamane/light-bulb-icon.html
+Artist: Yusuke Kamiyamane
+http://p.yusukekamiyamane.com/
 
 Task bar icon:
-http://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Light_bulb_icon.svg/84px-Light_bulb_icon.svg.png
+http://findicons.com/icon/258278/jabber?id=258737
+
+OK:
+http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org/Actions-dialog-ok-apply-icon.html
+
+Standby:
+http://www.iconarchive.com/show/must-have-icons-by-visualpharm/Pause-icon.html
+visualpharm.com
+
+Error:
+http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org/Actions-edit-delete-icon.html
 
 System idle time code (both Windows and Mac OS X):
 http://ochafik.com/blog/?p=98
