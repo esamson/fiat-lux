@@ -1,5 +1,6 @@
 package fiatlux.legacy.frontend;
 
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
@@ -14,6 +15,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import fiatlux.frontend.Frontend;
 import fiatlux.legacy.backend.*;
 import fiatlux.os.*;
 
@@ -30,13 +32,30 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 		this.setOS();
 
 		// set up window
-		frame = new JFrame("Fiat Lux (Legacy Version)");
+		frame = new ImageFrame("Fiat Lux (Legacy Version)");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setResizable(false);
 
 		// set icon
 		try {
-			frame.setIconImage(ImageIO.read(this.getClass().getResource(
-					"/resources/images/taskbaricon.png")));
+			switch (status) {
+			case Frontend.STATUS_OK:
+				frame.setIconImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconok.png")));
+				break;
+			case Frontend.STATUS_STANDBY:
+				frame.setIconImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconstandby.png")));
+				break;
+			case Frontend.STATUS_ERROR:
+				frame.setIconImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconerror.png")));
+				break;
+			default:
+				frame.setIconImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbaricon.png")));
+				break;
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -68,7 +87,7 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 
 		frame.add(menuBar);
 		frame.setJMenuBar(menuBar);
-		frame.setSize(400, 400);
+		frame.setSize(400, 300);
 
 		frame.setLocationRelativeTo(null);
 
@@ -90,6 +109,7 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 		frame.setVisible(true);
 
 		// set the status and welcome the user
+		this.setStatus(LegacyFrontend.STANDBY_NOINFO);
 
 		// ask for login info
 		back.startLogin();
@@ -122,7 +142,13 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 		}
 	}
 
-	// let the user set up their settings
+	// let the user set up their login info
+	public LinkedList<String> loginDialogue() {
+		LegacyLoginDialogue login = new LegacyLoginDialogue(this);
+		return login.getLoginInfo();
+	}
+
+	// let the user set up settings
 	public LinkedList<String> settingsDialogue(int floor, int zone) {
 		LegacySettingsDialogue settings = new LegacySettingsDialogue(floor,
 				zone, this.back, this);
@@ -131,6 +157,43 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 
 	// set the visible status of the program
 	public void setStatus(String status) {
+		this.statusString = status;
+		Image image = null;
+		if (status.equals(STANDBY_MANUAL) || status.equals(STANDBY_NOINFO)) {
+			this.standby = true;
+			this.forceStandby();
+			this.status = Frontend.STATUS_STANDBY;
+			try {
+				image = ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconstandby.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else if (status.equals(ERROR_CONNECTION) || status.equals(ERROR_INFO)) {
+			this.standby = true;
+			this.forceStandby();
+			this.status = Frontend.STATUS_ERROR;
+			try {
+				image = ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconerror.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			this.standby = false;
+			this.clearStandby();
+			this.status = Frontend.STATUS_OK;
+			try {
+				image = ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbariconok.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		frame.setIconImage(image);
+		frame.setImage(image);
+		frame.setStatus(statusString);
+		frame.repaint();
 	}
 
 	// handle actions
@@ -161,6 +224,7 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 
 	// utility method to ensure proper UI reflection of current state
 	public void clearStandby() {
+		this.standby = false;
 		int limit = frame.getJMenuBar().getMenu(0).getComponentCount();
 		for (int i = 0; i < limit; i++) {
 			JMenuItem current = frame.getJMenuBar().getMenu(0).getItem(i);
@@ -173,6 +237,7 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 
 	// utility method to ensure proper UI reflection of current state
 	public void forceStandby() {
+		this.standby = true;
 		int limit = frame.getJMenuBar().getMenu(0).getComponentCount();
 		for (int i = 0; i < limit; i++) {
 			JMenuItem current = frame.getJMenuBar().getMenu(0).getItem(i);
@@ -195,27 +260,29 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 	}
 
 	// utility method to maintain proper focus
-	public JFrame getFrame() {
+	public ImageFrame getFrame() {
 		return this.frame;
 	}
 
 	private LegacyBackend back;
-	private JFrame frame;
+	private ImageFrame frame;
 	private boolean standby;
 	private long timestamp;
 
+	private int status;
+	private String statusString;
 	private int os;
 
 	// possible status messages
 	public static final String ACTIVE = "Active - Keeping the lights on!";
-	public static final String STANDBY_NOINFO = "Standby - Please enter Calnet Authentication "
-			+ "information.";
-	public static final String STANDBY_INFO = "Standby - Calnet Authentication information "
-			+ "incorrect.";
-	public static final String STANDBY_CONNECTION = "Standby - Please check internet "
-			+ "connection.";
 	public static final String STANDBY_MANUAL = "Standby - Select menu option to activate Fiat "
 			+ "Lux.";
+	public static final String STANDBY_NOINFO = "Standby - Please enter Calnet Authentication "
+			+ "information.";
+	public static final String ERROR_INFO = "Error - Calnet Authentication information "
+			+ "incorrect.";
+	public static final String ERROR_CONNECTION = "Error - Please check internet "
+			+ "connection.";
 
 	// OS flags
 	public static final int WINDOWS = 0;

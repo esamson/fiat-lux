@@ -72,21 +72,6 @@ public class LegacyBackend {
 		if (auto) {
 			this.brightness = this.getBrightness(false)[this.floor][this.zone];
 		}
-		String bright = "";
-		switch (this.brightness) {
-		case 0:
-			bright = "Off";
-			break;
-		case 1:
-			bright = "Low";
-			break;
-		case 2:
-			bright = "Medium";
-			break;
-		case 3:
-			bright = "High";
-			break;
-		}
 		front.setStatus(LegacyFrontend.ACTIVE);
 		try {
 			ClientCookie info = this.getSessionCookie();
@@ -133,11 +118,11 @@ public class LegacyBackend {
 			}
 
 			// check login information
-			if (responseToSet.getStatusLine().getStatusCode() == 200) {
-				front.setStatus(LegacyFrontend.STANDBY_INFO);
+			if (responseToSet.getStatusLine().getStatusCode() != 200) {
+				front.setStatus(LegacyFrontend.ERROR_INFO);
 			}
 		} catch (Exception e) {
-			front.setStatus(LegacyFrontend.STANDBY_CONNECTION);
+			front.setStatus(LegacyFrontend.ERROR_CONNECTION);
 		}
 	}
 
@@ -170,7 +155,7 @@ public class LegacyBackend {
 
 					// check login information
 					if (responseToGet.getStatusLine().getStatusCode() != 200) {
-						front.setStatus(LegacyFrontend.STANDBY_INFO);
+						front.setStatus(LegacyFrontend.ERROR_INFO);
 						return new int[8][6];
 					}
 
@@ -193,7 +178,7 @@ public class LegacyBackend {
 			return levels;
 		} catch (Exception e) {
 
-			front.setStatus(LegacyFrontend.STANDBY_CONNECTION);
+			front.setStatus(LegacyFrontend.ERROR_CONNECTION);
 		}
 		return new int[8][6];
 	}
@@ -223,7 +208,7 @@ public class LegacyBackend {
 			return (responseToGet.getStatusLine().getStatusCode() == 200);
 		} catch (Exception e) {
 
-			front.setStatus(LegacyFrontend.STANDBY_CONNECTION);
+			front.setStatus(LegacyFrontend.ERROR_CONNECTION);
 		}
 		return false;
 	}
@@ -233,8 +218,7 @@ public class LegacyBackend {
 		LinkedList<String> info;
 		if (!dialogueOn) {
 			this.dialogueOn = true;
-			LegacyLoginDialogue dialogue = new LegacyLoginDialogue(this.front);
-			info = dialogue.getLoginInfo();
+			info = front.loginDialogue();
 			this.dialogueOn = false;
 		} else {
 			return;
@@ -246,7 +230,7 @@ public class LegacyBackend {
 				this.extend(true);
 			} else {
 
-				front.setStatus(LegacyFrontend.STANDBY_INFO);
+				front.setStatus(LegacyFrontend.ERROR_INFO);
 				this.calnetLogin();
 			}
 		}
@@ -269,7 +253,7 @@ public class LegacyBackend {
 			if (this.checkLogin(this.floor, this.zone)) {
 			} else {
 
-				front.setStatus(LegacyFrontend.STANDBY_INFO);
+				front.setStatus(LegacyFrontend.ERROR_INFO);
 				this.startLogin();
 			}
 		}
