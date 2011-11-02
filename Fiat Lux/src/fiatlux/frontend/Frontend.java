@@ -275,7 +275,6 @@ public class Frontend implements ActionListener, ItemListener {
 	private long timestamp;
 
 	private int status;
-
 	private int os;
 
 	// possible status messages
