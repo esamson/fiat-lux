@@ -235,6 +235,7 @@ public class Frontend implements ActionListener, ItemListener {
 
 	// utility method to ensure proper UI reflection of current state
 	public void clearStandby() {
+		this.standby = false;
 		int limit = trayIcon.getPopupMenu().getItemCount();
 		for (int i = 0; i < limit; i++) {
 			MenuItem current = trayIcon.getPopupMenu().getItem(i);
@@ -247,6 +248,7 @@ public class Frontend implements ActionListener, ItemListener {
 
 	// utility method to ensure proper UI reflection of current state
 	public void forceStandby() {
+		this.standby = true;
 		int limit = trayIcon.getPopupMenu().getItemCount();
 		for (int i = 0; i < limit; i++) {
 			MenuItem current = trayIcon.getPopupMenu().getItem(i);
