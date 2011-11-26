@@ -3,7 +3,6 @@ package fiatlux.legacy.backend;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import fiatlux.backend.Backend;
 import fiatlux.legacy.frontend.LegacyFrontend;
 
 public class Main {

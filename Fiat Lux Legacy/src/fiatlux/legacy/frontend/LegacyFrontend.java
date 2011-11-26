@@ -1,9 +1,7 @@
 package fiatlux.legacy.frontend;
 
 import java.awt.Image;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.IOException;
 import java.util.LinkedList;
@@ -17,7 +15,6 @@ import javax.swing.JMenuItem;
 
 import fiatlux.backend.Backend;
 import fiatlux.frontend.Frontend;
-import fiatlux.legacy.backend.*;
 import fiatlux.os.*;
 
 public class LegacyFrontend extends Frontend implements ActionListener,
@@ -30,7 +27,7 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 
 		// get OS
 		this.setOS();
-		SystemCallHandler sys = this.getSystemCallHandler(this.os);
+		IdleTimeDetector sys = this.getIdleTimeDetector(this.os);
 
 		// set up window
 		frame = new ImageFrame("Fiat Lux (Legacy Version)");
@@ -108,7 +105,7 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 			}
 			try {
 				int toMinute = 60000;
-				Thread.sleep(10 * toMinute);
+				Thread.sleep(1 * toMinute);
 
 				long idleTime = sys.getSystemIdleTime();
 
@@ -118,7 +115,7 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 					// implement location behavior
 				}
 
-				if (idleTime > 9 * toMinute) {
+				if (idleTime > 5 * toMinute) {
 					// implement idle behavior
 				}
 				this.timestamp = currTime;
@@ -166,6 +163,14 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 			try {
 				image = ImageIO.read(this.getClass().getResource(
 						"/resources/images/taskbariconerror.png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else if (status.equals(COMMUNICATING)) {
+			this.status = Frontend.STATUS_COMMUNICATING;
+			try {
+				image = ImageIO.read(this.getClass().getResource(
+						"/resources/images/taskbaricon.png"));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

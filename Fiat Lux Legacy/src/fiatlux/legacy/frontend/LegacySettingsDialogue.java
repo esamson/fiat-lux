@@ -15,8 +15,6 @@ import javax.swing.JTextField;
 import javax.swing.UIManager;
 
 import fiatlux.backend.Backend;
-import fiatlux.frontend.SettingsDialogue;
-import fiatlux.legacy.backend.LegacyBackend;
 
 public class LegacySettingsDialogue implements
 		ActionListener {
