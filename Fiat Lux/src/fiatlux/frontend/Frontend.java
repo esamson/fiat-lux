@@ -30,7 +30,7 @@ public class Frontend implements ActionListener, ItemListener {
 
 		// get OS
 		this.setOS();
-		SystemCallHandler sys = this.getSystemCallHandler(this.os);
+		IdleTimeDetector sys = this.getIdleTimeDetector(this.os);
 
 		// check to see if the tray is supported
 		if (!SystemTray.isSupported()) {
@@ -122,7 +122,7 @@ public class Frontend implements ActionListener, ItemListener {
 
 	// let the user set up their login info
 	public LinkedList<String> loginDialogue() {
-		LoginDialogue login = new LoginDialogue(this.status);
+		LoginDialogue login = new LoginDialogue(this.status, this.os);
 		return login.getLoginInfo();
 	}
 
@@ -130,7 +130,7 @@ public class Frontend implements ActionListener, ItemListener {
 	public LinkedList<String> settingsDialogue(int floor, int zone,
 			boolean extendNotifications) {
 		SettingsDialogue settings = new SettingsDialogue(floor, zone,
-				this.back, extendNotifications, this.status);
+				this.back, extendNotifications, this.status, this.os);
 		return settings.getSettingsInfo();
 	}
 
@@ -173,6 +173,14 @@ public class Frontend implements ActionListener, ItemListener {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+		} else if (status.equals(COMMUNICATING)) {
+			this.status = STATUS_COMMUNICATING;
+			try {
+				trayIcon.setImage(ImageIO.read(this.getClass().getResource(
+						"/resources/images/trayicon.png")));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		} else {
 			this.standby = false;
 			this.clearStandby();
@@ -202,8 +210,10 @@ public class Frontend implements ActionListener, ItemListener {
 		if (source.equals("Login")) {
 			back.calnetLogin();
 		} else if (source.equals("Settings")) {
+			this.setStatus(Frontend.COMMUNICATING);
 			back.settings();
 		} else if (source.equals("Extend")) {
+			this.setStatus(Frontend.COMMUNICATING);
 			back.extend(true);
 		} else if (source.equals("Exit")) {
 			back.exit();
@@ -222,6 +232,7 @@ public class Frontend implements ActionListener, ItemListener {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
 				this.setStatus(Frontend.STANDBY_MANUAL);
 			} else {
+				this.setStatus(Frontend.COMMUNICATING);
 				back.extend(true);
 			}
 		}
@@ -259,24 +270,31 @@ public class Frontend implements ActionListener, ItemListener {
 			this.os = Frontend.OS_WINDOWS;
 		} else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
 			this.os = Frontend.OS_MAC;
+
+		} else if (System.getProperty("os.name").toLowerCase().contains("nix")) {
+			this.os = Frontend.OS_UNIX;
+
 		} else {
 			this.os = Frontend.OS_OTHER;
 		}
 	}
 
-	public SystemCallHandler getSystemCallHandler(int os) {
-		SystemCallHandler sys = null;
+	public IdleTimeDetector getIdleTimeDetector(int os) {
+		IdleTimeDetector sys = null;
 
 		// create call handler
 		switch (this.os) {
 		case (Frontend.OS_WINDOWS):
-			sys = new WindowsCallHandler();
+			sys = new WindowsIdleTimeDetector();
 			break;
 		case (Frontend.OS_MAC):
-			sys = new OSXCallHandler();
+			sys = new OSXIdleTimeDetector();
+			break;
+		case (Frontend.OS_UNIX):
+			sys = new X11LinuxIdleTimeDetector();
 			break;
 		case (Frontend.OS_OTHER):
-			sys = new GenericCallHandler();
+			sys = new GenericIdleTimeDetector();
 			break;
 		}
 
@@ -302,14 +320,17 @@ public class Frontend implements ActionListener, ItemListener {
 			+ "incorrect.";
 	public static final String ERROR_CONNECTION = "Error - Please check internet "
 			+ "connection.";
+	public static final String COMMUNICATING = "Communicating - Contacting the server.";
 
 	// OS flags
-	public static final int OS_WINDOWS = 0;
-	public static final int OS_MAC = 1;
-	public static final int OS_OTHER = 2;
+	public static final int OS_OTHER = 0;
+	public static final int OS_WINDOWS = 1;
+	public static final int OS_MAC = 2;
+	public static final int OS_UNIX = 3;
 
 	// status flags
 	public static final int STATUS_OK = 0;
-	public static final int STATUS_STANDBY = 1;
-	public static final int STATUS_ERROR = 2;
+	public static final int STATUS_COMMUNICATING = 1;
+	public static final int STATUS_STANDBY = 2;
+	public static final int STATUS_ERROR = 3;
 }

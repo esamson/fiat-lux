@@ -92,7 +92,6 @@ public class Backend {
 							+ ", Zone " + this.zone
 							+ ".  Current brightness level is " + bright + ".");
 		}
-		front.setStatus(Frontend.ACTIVE);
 		try {
 			ClientCookie info = this.getSessionCookie();
 			HttpClient client = info.getClient();
@@ -115,7 +114,7 @@ public class Backend {
 			// at long last, set the timer if necessary
 			if (this.brightness != 0) {
 				int toMinute = 60;
-				int period = 11 * toMinute;
+				int period = 2 * toMinute;
 				System.out.println(period);
 				HttpPost connectForExtend = new HttpPost(
 						"http://green.millennium.berkeley.edu/power/"
@@ -142,6 +141,7 @@ public class Backend {
 					front.balloon("Extension success!",
 							"Lighting for the selected zone has been extended.");
 				}
+				front.setStatus(Frontend.ACTIVE);
 			} else {
 				front.balloon("Authentication Failure",
 						"Please re-enter your CalNet Authentication information.");
@@ -159,7 +159,6 @@ public class Backend {
 			front.balloon("Retreiving Brightness Settings...",
 					"Getting current brightness settings from the server.");
 		}
-		front.setStatus(Frontend.ACTIVE);
 		try {
 			ClientCookie info = this.getSessionCookie();
 			HttpClient client = info.getClient();
@@ -205,6 +204,7 @@ public class Backend {
 					}
 				}
 			}
+			front.setStatus(Frontend.ACTIVE);
 			return levels;
 		} catch (Exception e) {
 			front.balloon("Connection Error", e.toString());
@@ -217,7 +217,6 @@ public class Backend {
 	public boolean checkLogin(int floor, int zone) {
 		front.balloon("Checking Login Information...",
 				"Authenticating login information on the server.");
-		front.setStatus(Frontend.ACTIVE);
 		try {
 			ClientCookie info = this.getSessionCookie();
 			HttpClient client = info.getClient();
@@ -237,6 +236,7 @@ public class Backend {
 			Backend.printData(responseToGet);
 
 			// check login information
+			front.setStatus(Frontend.ACTIVE);
 			return (responseToGet.getStatusLine().getStatusCode() == 200);
 		} catch (Exception e) {
 			front.balloon("Connection Error", e.toString());
@@ -368,6 +368,7 @@ public class Backend {
 
 	// get session cookie to get data from the website or post data to it
 	private ClientCookie getSessionCookie() throws Exception {
+		front.setStatus(Frontend.COMMUNICATING);
 		// get login URL
 		HttpClient client = new DefaultHttpClient();
 		HttpParams params = client.getParams();

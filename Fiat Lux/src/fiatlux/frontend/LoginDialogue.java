@@ -18,7 +18,7 @@ public class LoginDialogue extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 
-	public LoginDialogue(int status) {
+	public LoginDialogue(int status, int os) {
 		super();
 		try {
 			switch (status) {

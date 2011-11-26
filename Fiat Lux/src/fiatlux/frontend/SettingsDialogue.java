@@ -31,7 +31,7 @@ public class SettingsDialogue extends JFrame implements ActionListener,
 	private static final long serialVersionUID = 1L;
 
 	public SettingsDialogue(int floor, int zone, Backend back,
-			boolean extendNotifications, int status) {
+			boolean extendNotifications, int status, int os) {
 		super();
 
 		// set up options
