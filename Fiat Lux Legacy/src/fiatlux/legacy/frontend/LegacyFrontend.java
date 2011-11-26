@@ -15,21 +15,22 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
+import fiatlux.backend.Backend;
 import fiatlux.frontend.Frontend;
 import fiatlux.legacy.backend.*;
 import fiatlux.os.*;
 
-public class LegacyFrontend implements ActionListener, ItemListener {
-
-	// constructor
-	public LegacyFrontend(LegacyBackend back) {
-		this.back = back;
-	}
+public class LegacyFrontend extends Frontend implements ActionListener,
+		ItemListener {
 
 	// initialize stuff and start extend loop
-	public void init() {
+	@Override
+	public void init(Backend back) {
+		this.back = back;
+
 		// get OS
 		this.setOS();
+		SystemCallHandler sys = this.getSystemCallHandler(this.os);
 
 		// set up window
 		frame = new ImageFrame("Fiat Lux (Legacy Version)");
@@ -91,21 +92,6 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 
 		frame.setLocationRelativeTo(null);
 
-		SystemCallHandler sys = null;
-
-		// create call handler
-		switch (this.os) {
-		case (LegacyFrontend.WINDOWS):
-			sys = new WindowsCallHandler();
-			break;
-		case (LegacyFrontend.MAC):
-			sys = new OSXCallHandler();
-			break;
-		case (LegacyFrontend.OTHER_OS):
-			sys = new GenericCallHandler();
-			break;
-		}
-
 		frame.setVisible(true);
 
 		// set the status and welcome the user
@@ -143,19 +129,23 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 	}
 
 	// let the user set up their login info
+	@Override
 	public LinkedList<String> loginDialogue() {
 		LegacyLoginDialogue login = new LegacyLoginDialogue(this);
 		return login.getLoginInfo();
 	}
 
 	// let the user set up settings
-	public LinkedList<String> settingsDialogue(int floor, int zone) {
+	@Override
+	public LinkedList<String> settingsDialogue(int floor, int zone,
+			boolean extendNotifications) {
 		LegacySettingsDialogue settings = new LegacySettingsDialogue(floor,
 				zone, this.back, this);
 		return settings.getSettingsInfo();
 	}
 
 	// set the visible status of the program
+	@Override
 	public void setStatus(String status) {
 		this.statusString = status;
 		Image image = null;
@@ -196,33 +186,13 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 		frame.repaint();
 	}
 
-	// handle actions
-	public void actionPerformed(ActionEvent e) {
-		String source = ((JMenuItem) e.getSource()).getText();
-		if (source.equals("Login")) {
-			back.calnetLogin();
-		} else if (source.equals("Settings")) {
-			back.settings();
-		} else if (source.equals("Extend")) {
-			back.extend(true);
-		} else if (source.equals("Exit")) {
-			back.exit();
-		}
-	}
-
-	// handle items
-	public void itemStateChanged(ItemEvent e) {
-		String source = ((JMenuItem) e.getSource()).getText();
-		if (source.equals("Standby")) {
-			if (e.getStateChange() == ItemEvent.SELECTED) {
-				// do the whole standbying thing here
-			} else {
-				back.extend(true);
-			}
-		}
+	@Override
+	public void balloon(String title, String message) {
+		System.out.println(title + ": " + message);
 	}
 
 	// utility method to ensure proper UI reflection of current state
+	@Override
 	public void clearStandby() {
 		this.standby = false;
 		int limit = frame.getJMenuBar().getMenu(0).getComponentCount();
@@ -236,6 +206,7 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 	}
 
 	// utility method to ensure proper UI reflection of current state
+	@Override
 	public void forceStandby() {
 		this.standby = true;
 		int limit = frame.getJMenuBar().getMenu(0).getComponentCount();
@@ -248,44 +219,11 @@ public class LegacyFrontend implements ActionListener, ItemListener {
 		}
 	}
 
-	// utility method to set OS flag
-	public void setOS() {
-		if (System.getProperty("os.name").toLowerCase().contains("win")) {
-			this.os = LegacyFrontend.WINDOWS;
-		} else if (System.getProperty("os.name").toLowerCase().contains("mac")) {
-			this.os = LegacyFrontend.MAC;
-		} else {
-			this.os = LegacyFrontend.OTHER_OS;
-		}
-	}
-
 	// utility method to maintain proper focus
 	public ImageFrame getFrame() {
 		return this.frame;
 	}
 
-	private LegacyBackend back;
 	private ImageFrame frame;
-	private boolean standby;
-	private long timestamp;
-
-	private int status;
 	private String statusString;
-	private int os;
-
-	// possible status messages
-	public static final String ACTIVE = "Active - Keeping the lights on!";
-	public static final String STANDBY_MANUAL = "Standby - Select menu option to activate Fiat "
-			+ "Lux.";
-	public static final String STANDBY_NOINFO = "Standby - Please enter Calnet Authentication "
-			+ "information.";
-	public static final String ERROR_INFO = "Error - Calnet Authentication information "
-			+ "incorrect.";
-	public static final String ERROR_CONNECTION = "Error - Please check internet "
-			+ "connection.";
-
-	// OS flags
-	public static final int WINDOWS = 0;
-	public static final int MAC = 1;
-	public static final int OTHER_OS = 2;
 }

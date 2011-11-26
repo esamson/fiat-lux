@@ -14,13 +14,15 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 
+import fiatlux.backend.Backend;
+import fiatlux.frontend.SettingsDialogue;
 import fiatlux.legacy.backend.LegacyBackend;
 
-public class LegacySettingsDialogue implements ActionListener {
+public class LegacySettingsDialogue implements
+		ActionListener {
 
-	public LegacySettingsDialogue(int floor, int zone, LegacyBackend back,
+	public LegacySettingsDialogue(int floor, int zone, Backend back,
 			LegacyFrontend front) {
-		super();
 
 		// set up options
 		Integer[] op0 = { 4, 6, 7 };
@@ -207,6 +209,6 @@ public class LegacySettingsDialogue implements ActionListener {
 	// selection data
 	private LinkedList<String> settingsInfo;
 
-	private LegacyBackend back;
+	private Backend back;
 	private LegacyFrontend front;
 }
