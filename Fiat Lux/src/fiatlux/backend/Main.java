@@ -3,6 +3,8 @@ package fiatlux.backend;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
+import fiatlux.frontend.Frontend;
+
 public class Main {
 	public static void main(String[] args) {
 		try {
@@ -17,6 +19,6 @@ public class Main {
 			e.printStackTrace();
 		}
 		Backend back = new Backend();
-		back.init();
+		back.init(new Frontend());
 	}
 }

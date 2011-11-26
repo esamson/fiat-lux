@@ -38,7 +38,7 @@ import fiatlux.frontend.Frontend;
 public class Backend {
 
 	// set up variables to begin extending
-	public void init() {
+	public void init(Frontend front) {
 		sessionId = UUID.randomUUID();
 		try {
 			ServerSocket instance = new ServerSocket(43657);
@@ -46,8 +46,8 @@ public class Backend {
 		} catch (Exception e) {
 			System.exit(0);
 		}
-		front = new Frontend(this);
-		front.init();
+		this.front = front;
+		this.front.init(this);
 	}
 
 	// check for activity, extend if necessary
@@ -307,7 +307,11 @@ public class Backend {
 			this.floor = Integer.parseInt(info.get(1));
 			this.zone = Integer.parseInt(info.get(2));
 			this.brightness = Integer.parseInt(info.get(3));
-			this.extendNotifications = Boolean.parseBoolean(info.get(4));
+			try {
+				this.extendNotifications = Boolean.parseBoolean(info.get(4));
+			} catch (IndexOutOfBoundsException e) {
+
+			}
 			this.save();
 			this.extend(false);
 		}
@@ -538,16 +542,16 @@ public class Backend {
 		this.password = p;
 	}
 
-	private String username;
-	private String password;
-	private int floor;
-	private int zone;
-	private int brightness;
+	protected String username;
+	protected String password;
+	protected int floor;
+	protected int zone;
+	protected int brightness;
 	private boolean extendNotifications;
 	// private String ip;
-	private UUID sessionId;
+	protected UUID sessionId;
 
-	private Frontend front;
+	protected Frontend front;
 
 	// booleans for preventing multiple dialogues
 	private boolean dialogueOn;

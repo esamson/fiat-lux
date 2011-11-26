@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.util.LinkedList;
 
 import javax.imageio.ImageIO;
+import javax.swing.JMenuItem;
 
 import com.growl.GrowlWrapper;
 
@@ -23,15 +24,13 @@ import fiatlux.os.*;
 
 public class Frontend implements ActionListener, ItemListener {
 
-	// constructor
-	public Frontend(Backend back) {
-		this.back = back;
-	}
-
 	// initialize stuff and start extend loop
-	public void init() {
+	public void init(Backend back) {
+		this.back = back;
+
 		// get OS
 		this.setOS();
+		SystemCallHandler sys = this.getSystemCallHandler(this.os);
 
 		// check to see if the tray is supported
 		if (!SystemTray.isSupported()) {
@@ -67,21 +66,6 @@ public class Frontend implements ActionListener, ItemListener {
 		popup.add(standbyItem);
 		popup.addSeparator();
 		popup.add(exit);
-
-		SystemCallHandler sys = null;
-
-		// create call handler
-		switch (this.os) {
-		case (Frontend.OS_WINDOWS):
-			sys = new WindowsCallHandler();
-			break;
-		case (Frontend.OS_MAC):
-			sys = new OSXCallHandler();
-			break;
-		case (Frontend.OS_OTHER):
-			sys = new GenericCallHandler();
-			break;
-		}
 
 		tray = SystemTray.getSystemTray();
 		trayIcon.setPopupMenu(popup);
@@ -209,7 +193,12 @@ public class Frontend implements ActionListener, ItemListener {
 
 	// handle actions
 	public void actionPerformed(ActionEvent e) {
-		String source = ((MenuItem) e.getSource()).getLabel();
+		String source = "";
+		try {
+			source = ((MenuItem) e.getSource()).getLabel();
+		} catch (ClassCastException e2) {
+			source = ((JMenuItem) e.getSource()).getText();
+		}
 		if (source.equals("Login")) {
 			back.calnetLogin();
 		} else if (source.equals("Settings")) {
@@ -223,7 +212,12 @@ public class Frontend implements ActionListener, ItemListener {
 
 	// handle items
 	public void itemStateChanged(ItemEvent e) {
-		String source = ((MenuItem) e.getSource()).getLabel();
+		String source = "";
+		try {
+			source = ((MenuItem) e.getSource()).getLabel();
+		} catch (ClassCastException e2) {
+			source = ((JMenuItem) e.getSource()).getText();
+		}
 		if (source.equals("Standby")) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
 				this.setStatus(Frontend.STANDBY_MANUAL);
@@ -270,14 +264,33 @@ public class Frontend implements ActionListener, ItemListener {
 		}
 	}
 
-	private Backend back;
+	public SystemCallHandler getSystemCallHandler(int os) {
+		SystemCallHandler sys = null;
+
+		// create call handler
+		switch (this.os) {
+		case (Frontend.OS_WINDOWS):
+			sys = new WindowsCallHandler();
+			break;
+		case (Frontend.OS_MAC):
+			sys = new OSXCallHandler();
+			break;
+		case (Frontend.OS_OTHER):
+			sys = new GenericCallHandler();
+			break;
+		}
+
+		return sys;
+	}
+
+	protected Backend back;
 	private TrayIcon trayIcon;
 	private SystemTray tray;
-	private boolean standby;
-	private long timestamp;
+	protected boolean standby;
+	protected long timestamp;
 
-	private int status;
-	private int os;
+	protected int status;
+	protected int os;
 
 	// possible status messages
 	public static final String ACTIVE = "Active - Keeping the lights on!";
