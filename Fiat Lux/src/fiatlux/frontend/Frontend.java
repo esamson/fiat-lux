@@ -20,7 +20,7 @@ import javax.swing.JMenuItem;
 import com.growl.GrowlWrapper;
 
 import fiatlux.backend.*;
-import fiatlux.os.*;
+import fiatlux.os.time.*;
 
 public class Frontend implements ActionListener, ItemListener {
 
@@ -30,7 +30,7 @@ public class Frontend implements ActionListener, ItemListener {
 
 		// get OS
 		this.setOS();
-		IdleTimeDetector sys = this.getIdleTimeDetector(this.os);
+		IdleTimeDetector sys = this.getIdleTimeDetector();
 
 		// check to see if the tray is supported
 		if (!SystemTray.isSupported()) {
@@ -279,7 +279,7 @@ public class Frontend implements ActionListener, ItemListener {
 		}
 	}
 
-	public IdleTimeDetector getIdleTimeDetector(int os) {
+	public IdleTimeDetector getIdleTimeDetector() {
 		IdleTimeDetector sys = null;
 
 		// create call handler
@@ -288,7 +288,7 @@ public class Frontend implements ActionListener, ItemListener {
 			sys = new WindowsIdleTimeDetector();
 			break;
 		case (Frontend.OS_MAC):
-			sys = new OSXIdleTimeDetector();
+			sys = new MacOSXIdleTimeDetector();
 			break;
 		case (Frontend.OS_UNIX):
 			sys = new X11LinuxIdleTimeDetector();
