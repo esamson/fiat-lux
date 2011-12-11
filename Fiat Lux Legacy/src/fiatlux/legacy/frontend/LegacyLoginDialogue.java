@@ -1,5 +1,6 @@
 package fiatlux.legacy.frontend;
 
+import java.awt.Color;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.util.LinkedList;
@@ -13,14 +14,14 @@ import javax.swing.JTextField;
 
 public class LegacyLoginDialogue {
 
-	public LegacyLoginDialogue(LegacyFrontend front) {
+	public LegacyLoginDialogue(LegacyFrontend front, boolean err) {
 		this.front = front;
 		this.loginInfo = new LinkedList<String>();
-		this.loginDialogue();
+		this.loginDialogue(err);
 	}
 
 	// let the user set up their login info
-	private void loginDialogue() {
+	private void loginDialogue(boolean err) {
 		JTextField username = new JTextField(16);
 		JPasswordField password = new JPasswordField(16);
 
@@ -28,22 +29,36 @@ public class LegacyLoginDialogue {
 		GridBagConstraints c = new GridBagConstraints();
 
 		c.gridy = 0;
+		if (err) {
+			JLabel error = new JLabel("Login failed.  Check Calnet info");
+			error.setForeground(Color.RED);
+			login.add(error, c);
+
+			c.gridy++;
+			JLabel error1 = new JLabel("or internet connection.");
+			error1.setForeground(Color.RED);
+			login.add(error1, c);
+
+			c.gridy++;
+		}
+		login.add(Box.createVerticalStrut(5), c);
+		c.gridy++;
 		c.anchor = GridBagConstraints.WEST;
 		login.add(new JLabel("Username"), c);
-		c.gridy = 1;
+		c.gridy++;
 		c.anchor = GridBagConstraints.CENTER;
 		login.add(Box.createVerticalStrut(5), c);
-		c.gridy = 2;
+		c.gridy++;
 		login.add(username, c);
-		c.gridy = 3;
+		c.gridy++;
 		login.add(Box.createVerticalStrut(15), c);
-		c.gridy = 4;
+		c.gridy++;
 		c.anchor = GridBagConstraints.WEST;
 		login.add(new JLabel("Password"), c);
-		c.gridy = 5;
+		c.gridy++;
 		c.anchor = GridBagConstraints.CENTER;
 		login.add(Box.createVerticalStrut(5), c);
-		c.gridy = 6;
+		c.gridy++;
 		login.add(password, c);
 
 		String[] buttons = new String[2];

@@ -15,7 +15,7 @@ import javax.swing.JMenuItem;
 
 import fiatlux.backend.Backend;
 import fiatlux.frontend.Frontend;
-import fiatlux.os.*;
+import fiatlux.os.time.IdleTimeDetector;
 
 public class LegacyFrontend extends Frontend implements ActionListener,
 		ItemListener {
@@ -27,7 +27,8 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 
 		// get OS
 		this.setOS();
-		IdleTimeDetector sys = this.getIdleTimeDetector(this.os);
+		IdleTimeDetector sys = this.getIdleTimeDetector();
+		localizer = this.getLocalizer();
 
 		// set up window
 		frame = new ImageFrame("Fiat Lux (Legacy Version)");
@@ -95,30 +96,24 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 		this.setStatus(LegacyFrontend.STANDBY_NOINFO);
 
 		// ask for login info
-		back.startLogin();
+		back.startLogin(false);
 		back.load();
 
 		// extend the light timer every amount of time
 		while (true) {
-			if (!standby) {
-				back.extend(true);
-			}
 			try {
 				int toMinute = 60000;
-				Thread.sleep(1 * toMinute);
 
 				long idleTime = sys.getSystemIdleTime();
 
-				long currTime = System.currentTimeMillis();
-				long interval = currTime - timestamp;
-				if (interval > 11 * toMinute) {
-					// implement location behavior
+				if (idleTime > 5 * toMinute && !standby) {
+					this.setStatus(Frontend.STANDBY_MANUAL);
+					this.forceStandby();
 				}
-
-				if (idleTime > 5 * toMinute) {
-					// implement idle behavior
+				if (!standby) {
+					back.extend(true);
 				}
-				this.timestamp = currTime;
+				Thread.sleep(1 * toMinute);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -127,8 +122,8 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 
 	// let the user set up their login info
 	@Override
-	public LinkedList<String> loginDialogue() {
-		LegacyLoginDialogue login = new LegacyLoginDialogue(this);
+	public LinkedList<String> loginDialogue(boolean err) {
+		LegacyLoginDialogue login = new LegacyLoginDialogue(this, err);
 		return login.getLoginInfo();
 	}
 
@@ -146,7 +141,8 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 	public void setStatus(String status) {
 		this.statusString = status;
 		Image image = null;
-		if (status.equals(STANDBY_MANUAL) || status.equals(STANDBY_NOINFO)) {
+		if (status.equals(STANDBY_MANUAL) || status.equals(STANDBY_NOINFO)
+				|| status.equals(STANDBY_LOCATION)) {
 			this.standby = true;
 			this.forceStandby();
 			this.status = Frontend.STATUS_STANDBY;
@@ -214,12 +210,13 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 	@Override
 	public void forceStandby() {
 		this.standby = true;
-		int limit = frame.getJMenuBar().getMenu(0).getComponentCount();
+		int limit = frame.getJMenuBar().getMenu(0).getItemCount();
 		for (int i = 0; i < limit; i++) {
 			JMenuItem current = frame.getJMenuBar().getMenu(0).getItem(i);
-			if (current.getName().equals("Standby")) {
+			if (current.getText().equals("Standby")) {
 				JCheckBoxMenuItem found = (JCheckBoxMenuItem) current;
 				found.setState(true);
+				return;
 			}
 		}
 	}
@@ -227,6 +224,10 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 	// utility method to maintain proper focus
 	public ImageFrame getFrame() {
 		return this.frame;
+	}
+
+	public boolean inZone() {
+		return localizer.inZone();
 	}
 
 	private ImageFrame frame;
