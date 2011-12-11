@@ -95,7 +95,6 @@ public class Frontend implements ActionListener, ItemListener {
 				long idleTime = sys.getSystemIdleTime();
 
 				if (idleTime > 5 * toMinute && !standby) {
-					System.out.println(idleTime / toMinute);
 					this.setStatus(Frontend.STANDBY_MANUAL);
 					this.forceStandby();
 					this.balloon("Idle",
@@ -223,7 +222,9 @@ public class Frontend implements ActionListener, ItemListener {
 		}
 		if (source.equals("Standby")) {
 			if (e.getStateChange() == ItemEvent.SELECTED) {
-				this.setStatus(Frontend.STANDBY_MANUAL);
+				if (!standby) {
+					this.setStatus(Frontend.STANDBY_MANUAL);
+				}
 			} else {
 				this.setStatus(Frontend.COMMUNICATING);
 				back.extend(true);
