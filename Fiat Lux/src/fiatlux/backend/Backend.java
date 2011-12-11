@@ -50,24 +50,17 @@ public class Backend {
 		this.front.init(this);
 	}
 
-	// check for activity, extend if necessary
-	/*public boolean collectLocationData() {
-		URL whatismyip;
-		try {
-			whatismyip = new URL(
-					"http://www.whatismyip.com/automation/n09230945.asp");
-			BufferedReader in = new BufferedReader(new InputStreamReader(
-					whatismyip.openStream()));
-
-			this.ip = in.readLine();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return true;
-	}*/
-
 	// automatically extend lighting
 	public void extend(boolean auto) {
+		if (!front.inZone() /*&& !front.inStandby()*/) {
+			front.setStatus(Frontend.STANDBY_LOCATION);
+			front.forceStandby();
+			front.balloon("Where are you?",
+					"We've detected that you're no longer in Sutardja Dai, and "
+							+ "won't extend the lights until you return.");
+			return;
+		}
+
 		if (auto) {
 			this.brightness = this.getBrightness(false)[this.floor][this.zone];
 		}
@@ -148,7 +141,8 @@ public class Backend {
 				front.setStatus(Frontend.ERROR_INFO);
 			}
 		} catch (Exception e) {
-			front.balloon("Connection Error", e.toString());
+			front.balloon("Connection Error",
+					"Please check your internet connection.");
 			front.setStatus(Frontend.ERROR_CONNECTION);
 		}
 	}
@@ -207,7 +201,8 @@ public class Backend {
 			front.setStatus(Frontend.ACTIVE);
 			return levels;
 		} catch (Exception e) {
-			front.balloon("Connection Error", e.toString());
+			front.balloon("Connection Error",
+					"Please check your internet connection.");
 			front.setStatus(Frontend.ERROR_CONNECTION);
 		}
 		return new int[8][6];
@@ -236,21 +231,29 @@ public class Backend {
 			Backend.printData(responseToGet);
 
 			// check login information
-			front.setStatus(Frontend.ACTIVE);
-			return (responseToGet.getStatusLine().getStatusCode() == 200);
+			boolean success = (responseToGet.getStatusLine().getStatusCode() == 200);
+			if (success) {
+				front.setStatus(Frontend.ACTIVE);
+			} else {
+				front.balloon("Authentication Failure", "Please re-enter "
+						+ "login information.");
+				front.setStatus(Frontend.ERROR_INFO);
+			}
+			return success;
 		} catch (Exception e) {
-			front.balloon("Connection Error", e.toString());
+			front.balloon("Connection Error",
+					"Please check your internet connection.");
 			front.setStatus(Frontend.ERROR_CONNECTION);
 		}
 		return false;
 	}
 
 	// ask for login info
-	public void calnetLogin() {
+	public void calnetLogin(boolean err) {
 		LinkedList<String> info;
 		if (!dialogueOn) {
 			this.dialogueOn = true;
-			info = front.loginDialogue();
+			info = front.loginDialogue(err);
 			this.dialogueOn = false;
 		} else {
 			return;
@@ -261,20 +264,17 @@ public class Backend {
 			if (this.checkLogin(this.floor, this.zone)) {
 				this.extend(true);
 			} else {
-				front.balloon("Authentication Failure", "Please re-enter "
-						+ "login information.");
-				front.setStatus(Frontend.ERROR_INFO);
-				this.calnetLogin();
+				this.calnetLogin(true);
 			}
 		}
 	}
 
 	// ask for login info on startup
-	public void startLogin() {
+	public void startLogin(boolean err) {
 		LinkedList<String> info;
 		if (!dialogueOn) {
 			this.dialogueOn = true;
-			info = front.loginDialogue();
+			info = front.loginDialogue(err);
 			this.dialogueOn = false;
 		} else {
 			return;
@@ -284,10 +284,7 @@ public class Backend {
 			this.password = info.get(1);
 			if (this.checkLogin(this.floor, this.zone)) {
 			} else {
-				front.balloon("Authentication Failure", "Please re-enter "
-						+ "login information.");
-				front.setStatus(Frontend.ERROR_INFO);
-				this.startLogin();
+				this.startLogin(true);
 			}
 		}
 	}

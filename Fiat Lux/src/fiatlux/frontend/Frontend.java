@@ -20,6 +20,7 @@ import javax.swing.JMenuItem;
 import com.growl.GrowlWrapper;
 
 import fiatlux.backend.*;
+import fiatlux.os.localization.*;
 import fiatlux.os.time.*;
 
 public class Frontend implements ActionListener, ItemListener {
@@ -31,6 +32,7 @@ public class Frontend implements ActionListener, ItemListener {
 		// get OS
 		this.setOS();
 		IdleTimeDetector sys = this.getIdleTimeDetector();
+		this.localizer = this.getLocalizer();
 
 		// check to see if the tray is supported
 		if (!SystemTray.isSupported()) {
@@ -82,38 +84,28 @@ public class Frontend implements ActionListener, ItemListener {
 				"Please enter your CalNet Authentication information to begin!");
 
 		// ask for login info
-		back.startLogin();
+		back.startLogin(false);
 		back.load();
 
-		// extend the light timer every amount of time
+		// extend the light timer regularly
 		while (true) {
-			if (!standby) {
-				back.extend(true);
-			}
 			try {
 				int toMinute = 60000;
-				Thread.sleep(10 * toMinute);
 
 				long idleTime = sys.getSystemIdleTime();
 
-				long currTime = System.currentTimeMillis();
-				long interval = currTime - timestamp;
-				if (interval > 11 * toMinute) {
-					this.setStatus(Frontend.STANDBY_MANUAL);
-					this.forceStandby();
-					this.balloon("Where are you?",
-							"If you're still in Sutardja Dai, please select the standby option "
-									+ "to continue using Fiat Lux.");
-				}
-
-				if (idleTime > 9 * toMinute) {
+				if (idleTime > 5 * toMinute && !standby) {
+					System.out.println(idleTime / toMinute);
 					this.setStatus(Frontend.STANDBY_MANUAL);
 					this.forceStandby();
 					this.balloon("Idle",
-							"You've gone idle.  Please select the standby option to continue "
-									+ "using Fiat Lux.");
+							"You've gone idle.  Please select the standby option to "
+									+ "continue using Fiat Lux.");
 				}
-				this.timestamp = currTime;
+				if (!standby) {
+					back.extend(true);
+				}
+				Thread.sleep(1 * toMinute);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -121,8 +113,8 @@ public class Frontend implements ActionListener, ItemListener {
 	}
 
 	// let the user set up their login info
-	public LinkedList<String> loginDialogue() {
-		LoginDialogue login = new LoginDialogue(this.status, this.os);
+	public LinkedList<String> loginDialogue(boolean err) {
+		LoginDialogue login = new LoginDialogue(this.status, this.os, err);
 		return login.getLoginInfo();
 	}
 
@@ -153,7 +145,8 @@ public class Frontend implements ActionListener, ItemListener {
 	// set the tooltip for the tray icon
 	public void setStatus(String status) {
 		trayIcon.setToolTip(status);
-		if (status.equals(STANDBY_MANUAL) || status.equals(STANDBY_NOINFO)) {
+		if (status.equals(STANDBY_MANUAL) || status.equals(STANDBY_NOINFO)
+				|| status.equals(STANDBY_LOCATION)) {
 			this.standby = true;
 			this.forceStandby();
 			this.status = Frontend.STATUS_STANDBY;
@@ -208,7 +201,7 @@ public class Frontend implements ActionListener, ItemListener {
 			source = ((JMenuItem) e.getSource()).getText();
 		}
 		if (source.equals("Login")) {
-			back.calnetLogin();
+			back.calnetLogin(false);
 		} else if (source.equals("Settings")) {
 			this.setStatus(Frontend.COMMUNICATING);
 			back.settings();
@@ -301,21 +294,53 @@ public class Frontend implements ActionListener, ItemListener {
 		return sys;
 	}
 
+	public Localizer getLocalizer() {
+		Localizer sys = null;
+
+		// create call handler
+		switch (this.os) {
+		case (Frontend.OS_WINDOWS):
+			sys = new WindowsLocalizer();
+			break;
+		case (Frontend.OS_MAC):
+			sys = new MacOSXLocalizer();
+			break;
+		case (Frontend.OS_UNIX):
+			sys = new X11LinuxLocalizer();
+			break;
+		case (Frontend.OS_OTHER):
+			sys = new GenericLocalizer();
+			break;
+		}
+
+		return sys;
+	}
+
+	public boolean inZone() {
+		return localizer.inZone();
+	}
+
+	public boolean inStandby() {
+		return standby;
+	}
+
 	protected Backend back;
 	private TrayIcon trayIcon;
 	private SystemTray tray;
 	protected boolean standby;
-	protected long timestamp;
 
 	protected int status;
 	protected int os;
+	protected Localizer localizer;
 
 	// possible status messages
 	public static final String ACTIVE = "Active - Keeping the lights on!";
-	public static final String STANDBY_MANUAL = "Standby - Select menu option to activate Fiat "
-			+ "Lux.";
-	public static final String STANDBY_NOINFO = "Standby - Please enter Calnet Authentication "
-			+ "information.";
+	public static final String STANDBY_MANUAL = "Standby - Select menu option to activate "
+			+ "Fiat Lux.";
+	public static final String STANDBY_NOINFO = "Standby - Please enter Calnet "
+			+ "Authentication information.";
+	public static final String STANDBY_LOCATION = "Standby - You are not in Sutardja "
+			+ "Dai Hall.";
 	public static final String ERROR_INFO = "Error - Calnet Authentication information "
 			+ "incorrect.";
 	public static final String ERROR_CONNECTION = "Error - Please check internet "

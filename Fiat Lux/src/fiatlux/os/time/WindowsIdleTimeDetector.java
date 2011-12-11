@@ -23,7 +23,7 @@ public class WindowsIdleTimeDetector implements IdleTimeDetector {
 			public int cbSize = 8;
 
 			// Tick count of when the last input event was received.
-			public long dwTime;
+			public int dwTime;
 		}
 
 		// returns time of last input
