@@ -12,12 +12,16 @@ public class MacOSXLocalizer extends Localizer {
 		try {
 			Process p = Runtime.getRuntime().exec(
 					"/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current"
-							+ "/Resources/airport -I | grep BSSID");
+							+ "/Resources/airport -I");
 			BufferedReader reader = new BufferedReader(new InputStreamReader(
 					p.getInputStream()));
 			String outLine = "";
 			while ((outLine = reader.readLine()) != null) {
-				// process BSSIDs out and add them to BSSIDList
+				if (outLine.contains("BSSID")) {
+					int colonIndex = outLine.indexOf(':');
+					String BSSID = outLine.substring(colonIndex + 2);
+					BSSIDs.add(BSSID);
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
