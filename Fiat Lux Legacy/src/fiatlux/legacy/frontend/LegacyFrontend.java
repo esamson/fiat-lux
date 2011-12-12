@@ -196,12 +196,13 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 	@Override
 	public void clearStandby() {
 		this.standby = false;
-		int limit = frame.getJMenuBar().getMenu(0).getComponentCount();
+		int limit = frame.getJMenuBar().getMenu(0).getItemCount();
 		for (int i = 0; i < limit; i++) {
 			JMenuItem current = frame.getJMenuBar().getMenu(0).getItem(i);
-			if (current.getName().equals("Standby")) {
+			if (current.getText().equals("Standby")) {
 				JCheckBoxMenuItem found = (JCheckBoxMenuItem) current;
-				found.setState(false);
+				found.setSelected(false);
+				return;
 			}
 		}
 	}
@@ -215,7 +216,7 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 			JMenuItem current = frame.getJMenuBar().getMenu(0).getItem(i);
 			if (current.getText().equals("Standby")) {
 				JCheckBoxMenuItem found = (JCheckBoxMenuItem) current;
-				found.setState(true);
+				found.setSelected(true);
 				return;
 			}
 		}
