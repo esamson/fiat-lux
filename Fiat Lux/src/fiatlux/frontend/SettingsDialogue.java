@@ -36,19 +36,19 @@ public class SettingsDialogue extends JFrame implements ActionListener,
 
 		// set up options
 		Integer[] op0 = { 4, 6, 7 };
-		selectFloor = new JComboBox<Integer>(op0);
+		selectFloor = new JComboBox(op0);
 		selectFloor.setName("Floor");
 		selectFloor.addActionListener(this);
 		Integer[] op1 = { 1, 2, 3, 4, 5 };
-		zones4 = new DefaultComboBoxModel<Integer>(op1);
+		zones4 = new DefaultComboBoxModel(op1);
 		Integer[] op2 = { 1 };
-		zones6 = new DefaultComboBoxModel<Integer>(op2);
+		zones6 = new DefaultComboBoxModel(op2);
 		Integer[] op3 = { 1, 2, 3, 4 };
-		zones7 = new DefaultComboBoxModel<Integer>(op3);
+		zones7 = new DefaultComboBoxModel(op3);
 		String[] op4 = { "Off", "Low", "Medium", "High" };
-		brightness = new DefaultComboBoxModel<String>(op4);
+		brightness = new DefaultComboBoxModel(op4);
 		String[] op5 = { "Off", "On" };
-		brightness6 = new DefaultComboBoxModel<String>(op5);
+		brightness6 = new DefaultComboBoxModel(op5);
 		this.floor = floor;
 		this.zone = zone;
 		this.back = back;
@@ -90,9 +90,9 @@ public class SettingsDialogue extends JFrame implements ActionListener,
 		myPanel = new JPanel(new GridBagLayout());
 		c = new GridBagConstraints();
 
-		selectZone = new JComboBox<Integer>();
+		selectZone = new JComboBox();
 		selectZone.addActionListener(this);
-		selectBrightness = new JComboBox<String>();
+		selectBrightness = new JComboBox();
 
 		selectExtendNotifications = new JCheckBox(
 				"Notify me when the timer is extended");
@@ -204,8 +204,7 @@ public class SettingsDialogue extends JFrame implements ActionListener,
 	// update options on change
 	public void actionPerformed(ActionEvent a) {
 		try {
-			@SuppressWarnings("unchecked")
-			JComboBox<Integer> cb = (JComboBox<Integer>) a.getSource();
+			JComboBox cb = (JComboBox) a.getSource();
 			if (cb.getName() != null && cb.getName().equals("Floor")) {
 				switch ((Integer) cb.getSelectedItem()) {
 				case 4:
@@ -249,18 +248,18 @@ public class SettingsDialogue extends JFrame implements ActionListener,
 	}
 
 	// models for switching
-	private DefaultComboBoxModel<Integer> zones4;
-	private DefaultComboBoxModel<Integer> zones6;
-	private DefaultComboBoxModel<Integer> zones7;
-	private DefaultComboBoxModel<String> brightness;
-	private DefaultComboBoxModel<String> brightness6;
+	private DefaultComboBoxModel zones4;
+	private DefaultComboBoxModel zones6;
+	private DefaultComboBoxModel zones7;
+	private DefaultComboBoxModel brightness;
+	private DefaultComboBoxModel brightness6;
 
 	// actual components
 	private JPanel myPanel;
 	private GridBagConstraints c;
-	private JComboBox<Integer> selectFloor;
-	private JComboBox<Integer> selectZone;
-	private JComboBox<String> selectBrightness;
+	private JComboBox selectFloor;
+	private JComboBox selectZone;
+	private JComboBox selectBrightness;
 	private JCheckBox selectExtendNotifications;
 
 	private int[][] brightnessLevels;

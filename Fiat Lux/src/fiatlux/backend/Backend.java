@@ -245,6 +245,7 @@ public class Backend {
 			front.balloon("Connection Error",
 					"Please check your internet connection.");
 			front.setStatus(Frontend.ERROR_CONNECTION);
+			e.printStackTrace();
 		}
 		return false;
 	}
