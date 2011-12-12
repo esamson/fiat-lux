@@ -135,6 +135,7 @@ public class Backend {
 							"Lighting for the selected zone has been extended.");
 				}
 				front.setStatus(Frontend.ACTIVE);
+				// front.clearStandby();
 			} else {
 				front.balloon("Authentication Failure",
 						"Please re-enter your CalNet Authentication information.");
