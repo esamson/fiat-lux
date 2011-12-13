@@ -20,6 +20,8 @@ public class BSSIDListProcessor {
 			while ((BSSID = reader.readLine()) != null) {
 				BSSIDList.add(BSSID);
 			}
+			
+			reader.close();
 
 			// add floor 6 BSSIDs
 			reader = new BufferedReader(new InputStreamReader(this.getClass()
@@ -28,6 +30,8 @@ public class BSSIDListProcessor {
 			while ((BSSID = reader.readLine()) != null) {
 				BSSIDList.add(BSSID);
 			}
+			
+			reader.close();
 
 			// add floor 7 BSSIDs
 			reader = new BufferedReader(new InputStreamReader(this.getClass()
@@ -39,6 +43,8 @@ public class BSSIDListProcessor {
 
 			// add random extra BSSIDs
 			BSSIDList.add("a0:21:b7:b4:e3:4a");
+			
+			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

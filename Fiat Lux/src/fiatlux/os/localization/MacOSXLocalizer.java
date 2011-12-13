@@ -23,6 +23,7 @@ public class MacOSXLocalizer extends Localizer {
 					BSSIDs.add(BSSID);
 				}
 			}
+			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

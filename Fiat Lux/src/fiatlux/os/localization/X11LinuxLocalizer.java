@@ -21,6 +21,7 @@ public class X11LinuxLocalizer extends Localizer {
 					BSSIDs.add(BSSID);
 				}
 			}
+			reader.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

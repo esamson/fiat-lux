@@ -529,6 +529,8 @@ public class Backend {
 			total += ('\n');
 		}
 
+		rd.close();
+		
 		// Return full string
 		return total;
 	}
