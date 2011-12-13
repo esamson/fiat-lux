@@ -27,6 +27,9 @@ public class MacOSXLocalizer extends Localizer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		return processor.deepContains(BSSIDs);
+		if (BSSIDs.isEmpty()) {
+			return this.checkIP();
+		}
+		return bssidProcessor.deepContains(BSSIDs);
 	}
 }
