@@ -20,7 +20,6 @@ import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 public class HttpClientWrapper {
-	@SuppressWarnings("deprecation")
 	public static HttpClient wrapClient(HttpClient base) {
 		try {
 			SSLContext ctx = SSLContext.getInstance("TLS");
@@ -40,32 +39,27 @@ public class HttpClientWrapper {
 			};
 			X509HostnameVerifier verifier = new X509HostnameVerifier() {
 
-				@Override
 				public void verify(String string, SSLSocket ssls)
 						throws IOException {
 				}
 
-				@Override
 				public void verify(String string, X509Certificate xc)
 						throws SSLException {
 				}
 
-				@Override
 				public void verify(String string, String[] strings,
 						String[] strings1) throws SSLException {
 				}
 
-				@Override
 				public boolean verify(String string, SSLSession ssls) {
 					return true;
 				}
 			};
 			ctx.init(null, new TrustManager[] { tm }, null);
-			SSLSocketFactory ssf = new SSLSocketFactory(ctx);
-			ssf.setHostnameVerifier(verifier);
+			SSLSocketFactory ssf = new SSLSocketFactory(ctx, verifier);
 			ClientConnectionManager ccm = base.getConnectionManager();
 			SchemeRegistry sr = ccm.getSchemeRegistry();
-			sr.register(new Scheme("https", ssf, 443));
+			sr.register(new Scheme("https", 443, ssf));
 			return new DefaultHttpClient(ccm, base.getParams());
 		} catch (Exception ex) {
 			ex.printStackTrace();
