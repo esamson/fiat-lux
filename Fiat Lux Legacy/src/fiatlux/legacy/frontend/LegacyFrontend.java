@@ -231,6 +231,10 @@ public class LegacyFrontend extends Frontend implements ActionListener,
 		return localizer.inZone();
 	}
 
+	@Override
+	public void exit() {
+	}
+
 	private ImageFrame frame;
 	private String statusString;
 }
