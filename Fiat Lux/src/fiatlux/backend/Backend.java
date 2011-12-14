@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Writer;
 import java.net.ServerSocket;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,6 +19,7 @@ import java.util.NoSuchElementException;
 import java.util.StringTokenizer;
 import java.util.UUID;
 
+import javax.net.ssl.X509TrustManager;
 import javax.swing.JOptionPane;
 
 import org.apache.http.Header;
@@ -368,6 +371,7 @@ public class Backend {
 	// get session cookie to get data from the website or post data to it
 	private ClientCookie getSessionCookie() throws Exception {
 		front.setStatus(Frontend.COMMUNICATING);
+
 		// get login URL
 		HttpClient client = new DefaultHttpClient();
 		HttpParams params = client.getParams();
@@ -530,7 +534,7 @@ public class Backend {
 		}
 
 		rd.close();
-		
+
 		// Return full string
 		return total;
 	}
