@@ -60,7 +60,8 @@ public class BSSIDProcessor {
 	 */
 	public boolean deepContains(ArrayList<String> BSSIDs) {
 		for (String s : BSSIDs) {
-			if (BSSIDList.contains(s)) {
+			System.out.println(s);
+			if (BSSIDList.contains(s.toUpperCase())) {
 				return true;
 			}
 		}

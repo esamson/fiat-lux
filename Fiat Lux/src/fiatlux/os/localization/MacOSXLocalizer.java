@@ -20,7 +20,16 @@ public class MacOSXLocalizer extends Localizer {
 				if (outLine.contains("BSSID")) {
 					int colonIndex = outLine.indexOf(':');
 					String BSSID = outLine.substring(colonIndex + 2);
-					BSSIDs.add(BSSID);
+					String trueBSSID = "";
+					for (String s : BSSID.split(":")) {
+						if (s.length() == 1) {
+							trueBSSID += "0" + s + ":";
+						} else {
+							trueBSSID += s + ":";
+						}
+					}
+					trueBSSID = trueBSSID.substring(0, trueBSSID.length() - 1);
+					BSSIDs.add(trueBSSID);
 				}
 			}
 			reader.close();
