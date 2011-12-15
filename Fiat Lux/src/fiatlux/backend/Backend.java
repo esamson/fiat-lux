@@ -52,7 +52,7 @@ public class Backend {
 
 	// automatically extend lighting
 	public void extend(boolean auto) {
-		if (!front.inZone() /* && !front.inStandby() */) {
+		if (!front.inZone()) {
 			front.setStatus(Frontend.STANDBY_LOCATION);
 			front.forceStandby();
 			front.balloon("Where are you?",

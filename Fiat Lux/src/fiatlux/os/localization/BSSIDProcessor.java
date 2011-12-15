@@ -41,7 +41,7 @@ public class BSSIDProcessor {
 			}
 
 			// add random extra BSSIDs
-			BSSIDList.add("a0:21:b7:b4:e3:4a");
+			BSSIDList.add("A0:21:B7:B4:E3:4A");
 
 			reader.close();
 		} catch (IOException e) {
