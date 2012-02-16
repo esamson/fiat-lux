@@ -1,0 +1,32 @@
+System tray icon:
+http://www.iconarchive.com/show/fugue-icons-by-yusuke-kamiyamane/light-bulb-icon.html
+Artist: Yusuke Kamiyamane
+http://p.yusukekamiyamane.com/
+
+Task bar icon:
+http://findicons.com/icon/258278/jabber?id=258737
+
+OK icon:
+http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org/Actions-dialog-ok-apply-icon.html
+
+Standby icon:
+http://www.iconarchive.com/show/must-have-icons-by-visualpharm/Pause-icon.html
+visualpharm.com
+
+Error icon:
+http://www.iconarchive.com/show/oxygen-icons-by-oxygen-icons.org/Actions-edit-delete-icon.html
+
+System idle time code (both Windows and Mac OS X):
+http://ochafik.com/blog/?p=98
+
+System idle time code (X11 Linux):
+http://www.jppf.org/samples-pack/IdleSystem/src/org/jppf/example/idlesystem/X11IdleTimeDetector.java.html
+
+Growl notifications:
+http://groups.google.com/group/growldiscuss/browse_thread/thread/28ee0e1be2ed825b/b1eb01effb3af9eb?pli=1
+
+IP Address code:
+http://www.roseindia.net/java/java-get-example/get-own-ip.shtml
+
+SSL error fix:
+http://javaskeleton.blogspot.com/2010/07/avoiding-peer-not-authenticated-with.html
