@@ -1,4 +1,4 @@
 syntax: glob
-.metadata/*
 .*
-*.class
+.class
+*/bin/*
