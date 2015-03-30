@@ -1,0 +1,1 @@
+This is a user client for lighting control in Sutardja Dai Hall, a building at the University of California, Berkeley.
